@@ -71,3 +71,44 @@ Automatic E2E test for REST API can be found [here](https://github.com/ddd-by-ex
         thereIsOneWithdrawalOf(TEN, cardUUid);
     }
 ```
+
+### CQRS with application service as explicit synchronization
+
+Code can be found under [explicit-with-dto](https://github.com/ddd-by-examples/all-things-cqrs/tree/master/explicit-with-dto) module. Same version, but with JPA entities as results of a query can be found [here](https://github.com/ddd-by-examples/all-things-cqrs/tree/master/explicit-with-entity).
+
+Running the app:
+```
+mvn spring-boot:run
+```
+
+A sample *Withdraw* command:
+
+```
+curl localhost:8080/withdrawals -X POST --header 'Content-Type: application/json' -d '{"card":"3a3e99f0-5ad9-47fa-961d-d75fab32ef0e", "amount": 10.00}' --verbose
+```
+Verifed by a query:
+```
+curl http://localhost:8080/withdrawals?cardId=3a3e99f0-5ad9-47fa-961d-d75fab32ef0e --verbose
+```
+Expected result:
+```
+[{"amount":10.00}]
+```
+
+Architecture overview:
+
+![application-process](https://github.com/ddd-by-examples/all-things-cqrs/blob/master/appprocess.jpg)
+
+Automatic E2E test for REST API can be found [here](https://github.com/ddd-by-examples/all-things-cqrs/blob/master/explicit-with-dto/src/test/java/io/dddbyexamples/cqrs/CommandQuerySynchronizationTest.java):
+
+```java
+    @Test
+    public void shouldSynchronizeQuerySideAfterSendingACommand() {
+        // given
+        UUID cardUUid = thereIsCreditCardWithLimit(new BigDecimal(100)); //HTTP POST
+        // when
+        clientWantsToWithdraw(TEN, cardUUid); //HTTP GET
+        // then
+        thereIsOneWithdrawalOf(TEN, cardUUid);
+    }
+```
