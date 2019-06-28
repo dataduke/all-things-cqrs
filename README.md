@@ -4,7 +4,7 @@ A bunch of ways of doing [CQRS](https://martinfowler.com/bliki/CQRS.html) with v
 
 ## Getting Started
 
-These instructions will get you and overview of how to synchronize two different datasources. We will do so by separating command and queries in a simple CQRS app. Each module represents a different way of introducing this pattern. Also, each module is a standalone [Spring Boot](https://spring.io/projects/spring-boot) application.
+These instructions will get you and overview of how to synchronize two different datasources. We will do so by separating command and queries in a simple CQRS app. Each module represents a different way of introducing this pattern. Also, each module is a standalone [Spring Boot](https://spring.io/projects/spring-boot) application. 
 
 ### Prerequisites
 
@@ -33,7 +33,7 @@ Let's agree on a color code for commands, queries and synchronization. It will m
 
 ### Commands and queries handled in one class (no CQRS)
 
-Code can be found under [in-one-class](https://github.com/ddd-by-examples/all-things-cqrs/tree/master/in-one-class) module.
+Code can be found under [in-one-class](https://github.com/ddd-by-examples/all-things-cqrs/tree/master/in-one-class) module. 
 
 Running the app:
 ```
@@ -97,7 +97,7 @@ Expected result:
 
 Architecture overview:
 
-![application-process](https://github.com/ddd-by-examples/all-things-cqrs/blob/master/appprocess.jpg)
+![application-process](https://github.com/ddd-by-examples/all-things-cqrs/blob/master/appprocess.jpg) 
 
 Automatic E2E test for REST API can be found [here](https://github.com/ddd-by-examples/all-things-cqrs/blob/master/explicit-with-dto/src/test/java/io/dddbyexamples/cqrs/CommandQuerySynchronizationTest.java):
 
@@ -140,7 +140,7 @@ Expected result:
 
 Architecture overview:
 
-![appevents](https://github.com/ddd-by-examples/all-things-cqrs/blob/master/appevents.jpeg)
+![appevents](https://github.com/ddd-by-examples/all-things-cqrs/blob/master/appevents.jpeg) 
 
 Automatic E2E test for REST API can be found [here](https://github.com/ddd-by-examples/all-things-cqrs/blob/master/with-application-events/src/test/java/io/dddbyexamples/cqrs/CommandQuerySynchronizationTest.java):
 
@@ -181,7 +181,7 @@ Expected result:
 
 Architecture overview:
 
-![trigger](https://github.com/ddd-by-examples/all-things-cqrs/blob/master/trigger.jpg)
+![trigger](https://github.com/ddd-by-examples/all-things-cqrs/blob/master/trigger.jpg) 
 
 Automatic E2E test for REST API can be found [here](https://github.com/ddd-by-examples/all-things-cqrs/blob/master/with-trigger/src/test/java/io/dddbyexamples/cqrs/CommandQuerySynchronizationTest.java):
 
@@ -239,7 +239,7 @@ Expected result can be seen below. Remember that it takes time to read transacti
 
 Architecture overview:
 
-![logtailing](https://github.com/ddd-by-examples/all-things-cqrs/blob/master/transactionlog.jpg)
+![logtailing](https://github.com/ddd-by-examples/all-things-cqrs/blob/master/transactionlog.jpg) 
 
 Since it is problematic (or immposible) to test transaction log tailing, there is no E2E test that verifies commands and queries. But we can test if a message arrival in Kafka's topic results in a proper withdrawal created. The code is [here](https://github.com/ddd-by-examples/all-things-cqrs/blob/master/with-log-tailing/src/test/java/io/dddbyexamples/cqrs/sink/ReadModelUpdaterTest.java):
 
@@ -292,7 +292,7 @@ Expected result can be seen below. Remember that it takes time to publish and re
 
 Architecture overview:
 
-![events](https://github.com/ddd-by-examples/all-things-cqrs/blob/master/events.jpg)
+![events](https://github.com/ddd-by-examples/all-things-cqrs/blob/master/events.jpg) 
 
 Since it is not recommended to test 2 microservices in one test, there is no E2E test that verifies commands and queries. But we can test if a message arrival in Kafka's topic results in a proper withdrawal created. The code is [here](https://github.com/ddd-by-examples/all-things-cqrs/blob/master/with-events/with-events-sink/src/test/java/io/dddbyexamples/cqrs/sink/ReadModelUpdaterTest.java):
 
@@ -306,7 +306,7 @@ Since it is not recommended to test 2 microservices in one test, there is no E2E
         thereIsOneWithdrawalOf(TEN, cardID);
     }
 ```
-Also it is possible to test if a successful withdrawal is followed eventually by a proper domain event publication. The code is [here](https://github.com/ddd-by-examples/all-things-cqrs/blob/master/with-events/with-events-source/src/test/java/io/dddbyexamples/cqrs/EventsPublishingTest.java).
+Also it is possible to test if a successful withdrawal is followed eventually by a proper domain event publication. The code is [here](https://github.com/ddd-by-examples/all-things-cqrs/blob/master/with-events/with-events-source/src/test/java/io/dddbyexamples/cqrs/EventsPublishingTest.java). 
 
 ```java
     @Test
@@ -319,3 +319,6 @@ Also it is possible to test if a successful withdrawal is followed eventually by
         await().atMost(FIVE_SECONDS).until(() -> eventAboutWithdrawalWasSent(TEN, cardUUid));
     }
 ```
+
+### CQRS with Axon Framework
+Take a look [here](https://github.com/pivotalsoftware/ESarch)
