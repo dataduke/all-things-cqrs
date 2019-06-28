@@ -196,3 +196,61 @@ Automatic E2E test for REST API can be found [here](https://github.com/ddd-by-ex
         thereIsOneWithdrawalOf(TEN, cardUUid);
     }
 ```
+
+### CQRS with transaction log tailing as synchronization
+
+Synchronization done by listening to database's [transaction log](https://en.wikipedia.org/wiki/Transaction_log), which is a log of transactions accepted by a database management system.
+
+Code can be found under [with-log-tailing](https://github.com/ddd-by-examples/all-things-cqrs/tree/master/with-log-tailing) module.
+
+Additional components:
+*  MySQL to keep withdrawals and credit cards.
+*  [Apache Kafka](https://kafka.apache.org) for pub/sub for messages read from database transaction log (in this case it is MySQL).
+*  [Kafka Connect](https://www.confluent.io/product/connectors/) with [Debezium](https://debezium.io) to read MySQL’s transaction log and stream messages to Kafka’s topic.
+*  [Spring Cloud Stream](https://cloud.spring.io/spring-cloud-stream/) to read messages from Kafka’s topic.
+
+
+Running the app, remember to be in **root** of the project:
+
+* In *docker-compose.yaml*, under service *kafka* - **CHANGE** IP to match your host machine. Keep port pointing to 9092:
+```
+ADVERTISED_LISTENERS=PLAINTEXT://YOUR_HOST_IP:9092
+```
+* Run the whole infrastructure:
+```
+docker-compose up
+```
+* Tell Kafka Connect to tail transaction log of MySQL DB and send messages to Kafka:
+```
+curl -i -X POST -H "Accept:application/json" -H  "Content-Type:application/json" http://localhost:8083/connectors/ -d @source.json --verbose
+```
+A sample *Withdraw* command:
+```
+curl localhost:8080/withdrawals -X POST --header 'Content-Type: application/json' -d '{"card":"3a3e99f0-5ad9-47fa-961d-d75fab32ef0e", "amount": 10.00}' --verbose
+```
+Verifed by a query:
+```
+curl http://localhost:8080/withdrawals?cardId=3a3e99f0-5ad9-47fa-961d-d75fab32ef0e --verbose
+```
+Expected result can be seen below. Remember that it takes time to read transaction log and create a withdrawal. Hence a withdrawal might be not immedietly seen:
+```
+[{"amount":10.00}]
+```
+
+Architecture overview:
+
+![logtailing](https://github.com/ddd-by-examples/all-things-cqrs/blob/master/transactionlog.jpg)
+
+Since it is problematic (or immposible) to test transaction log tailing, there is no E2E test that verifies commands and queries. But we can test if a message arrival in Kafka's topic results in a proper withdrawal created. The code is [here](https://github.com/ddd-by-examples/all-things-cqrs/blob/master/with-log-tailing/src/test/java/io/dddbyexamples/cqrs/sink/ReadModelUpdaterTest.java):
+
+```java
+    @Test
+    public void shouldSynchronizeQuerySideAfterLogTailing() {
+        // given
+        String cardUUid = thereIsCreditCardWithLimit(new BigDecimal(100));
+        // when
+        creditCardUpdateReadFromDbTransactionLog(TEN, cardUUid);
+        // then
+        thereIsOneWithdrawalOf(TEN, cardUUid);
+    }
+```
