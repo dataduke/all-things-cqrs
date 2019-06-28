@@ -13,14 +13,6 @@
 
 	<modules>
 		<module>in-one-class</module>
-		<module>explicit-with-entity</module>
-		<module>explicit-with-dto</module>
-		<module>with-trigger</module>
-		<module>with-log-tailing</module>
-		<module>with-events</module>
-		<module>with-application-events</module>
-		<module>with-application-events-immutable</module>
-
 	</modules>
 
 </project>
